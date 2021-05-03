@@ -6,7 +6,9 @@ As the humanoid soccer robots are highly dependent on their visual perception to
 
 ## Dataset
 The synthetic dataset is composed of 10,000 images along with their true masks (pixel-wise labels). Also, The real dataset has consisted of 250 real images which manually segmented.
+
 Download Synthetic Dataset [GDrive](https://drive.google.com/file/d/1XinZHuwVtGzm4pzWZvbqeROO_O4IGGim/view?usp=sharing)
+
 Download Real Dataset [GDrive](https://drive.google.com/file/d/1v0EUAB8FtaIa078qA0CB7h3fnlGPJhys/view?usp=sharing)
 
 ## Video
@@ -15,4 +17,6 @@ The proposed model was tested on a humanoid soccer robot with an Intel® Core™
 
 ## Simulation
 In this paper, to simulate a more realistic environment in the humanoid soccer league a number of artificially created changes have been put in place and numerous advances have been achieved. All the objects (i.e., robots, balls) and textures on the floor and wall spawn randomly during generating the dataset. Besides, a camera was attached to one of the robots, so all the images were taken in different view angles and locations on the field of play. Applying all these conditions in the simulator, 10,000 images with the shape of (480,640) pixels were generated which were annotated automatically. All the rendered images were converted to a mask, based on the blueprints visual scripting of the UE, which provides text files including id numbers between 0 to 5. Each id number specifies a class; {0: Ball, 1: Field, 2: Robots, 3: Lines, 4: Background, 5: Goals}.
-Download simulator to generatee synthetic dataset [Simulator](https://drive.google.com/file/d/1mKEscPXa2ESHYhZAZ5DIR49AQJiKfwrN/view?usp=sharing)
+Download simulator to generatee synthetic dataset 
+
+[Simulator](https://drive.google.com/file/d/1mKEscPXa2ESHYhZAZ5DIR49AQJiKfwrN/view?usp=sharing)
