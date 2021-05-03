@@ -11,3 +11,8 @@ Download Real Dataset [GDrive](https://drive.google.com/file/d/1v0EUAB8FtaIa078q
 
 ## Video
 The proposed model was tested on a humanoid soccer robot with an Intel® Core™ i3-6100U Processor (3M Cache, 2.30 GHz), and turned out to be competent enough to process the unseen real data with a sample rate of 7 fps. The network outputs video in the real environment is uploaded in the [Youtube](https://youtu.be/y-lblnwJhKM).
+
+
+## Simulation
+In this paper, to simulate a more realistic environment in the humanoid soccer league a number of artificially created changes have been put in place and numerous advances have been achieved. All the objects (i.e., robots, balls) and textures on the floor and wall spawn randomly during generating the dataset. Besides, a camera was attached to one of the robots, so all the images were taken in different view angles and locations on the field of play. Applying all these conditions in the simulator, 10,000 images with the shape of (480,640) pixels were generated which were annotated automatically. All the rendered images were converted to a mask, based on the blueprints visual scripting of the UE, which provides text files including id numbers between 0 to 5. Each id number specifies a class; {0: Ball, 1: Field, 2: Robots, 3: Lines, 4: Background, 5: Goals}.
+Download simulator to generatee synthetic dataset [Simulator](https://drive.google.com/file/d/1mKEscPXa2ESHYhZAZ5DIR49AQJiKfwrN/view?usp=sharing)
