@@ -1,7 +1,7 @@
 # Sim-to-Real semantic segmentation for humanoid soccer robots
 This project submitted at 24th RoboCup International Symposium as an open-source project.
 
-| Download  | Description |
+| Caption  | Download Link |
 | ------------- | ------------- |
 | Synthetic Dataset  | [GDrive](https://drive.google.com/file/d/1XinZHuwVtGzm4pzWZvbqeROO_O4IGGim/view?usp=sharing)  |
 | Real Dataset  | [GDrive](https://drive.google.com/file/d/1v0EUAB8FtaIa078qA0CB7h3fnlGPJhys/view?usp=sharing)  |
