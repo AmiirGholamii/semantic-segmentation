@@ -7,24 +7,7 @@ import random
 from keras import backend as K
 import model
 import datetime
-# palette = np.array([
-#     [31.,120.,180. ] , # Ball
-#     [106.,176.,25. ] , # Field
-#     [156.,62.,235. ] , # Robots
-#     [255.,255.,255.] , # Line
-#     [69.,144.,232. ] , # Background
-#     [227.,26.,28.  ] , # Goal
-#     ], dtype=np.float32)
-# def get_weights(data_set):
-#     weights = np.zeros(6)
-#     data_set_iterator = iter(data_set)
-#     for data in data_set_iterator:
-#         for label in data[1]:
-#             for i in range(240):
-#                 for j in range(320):
-#                     weights[np.where(palette == label[i,j])[0]] += 1
-#         print(weights)
-#     return weights
+
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
