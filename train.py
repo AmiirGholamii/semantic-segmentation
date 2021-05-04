@@ -250,7 +250,7 @@ def jaccard_coef(y_true, y_pred, smooth=1):
     jac = (intersection + smooth) / (sum_ - intersection + smooth)
     return jac * smooth
 
-model = model.build_unet((240, 320, 3), 6)
+model = model.unet_model((240, 320, 3), 6)
 # print(model.summary())
 # lr = 1
 def tf_count(t, val):
