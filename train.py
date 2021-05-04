@@ -1,13 +1,8 @@
 # Import Libraries
-import humanoid_soccer_dataset  # Register `my_dataset`
 import tensorflow_datasets as tfds
 import tensorflow as tf
 import numpy as np
-from IPython.display import clear_output
 import matplotlib.pyplot as plt
-import glob
-import cv2
-import sys
 import random
 from keras import backend as K
 import model
