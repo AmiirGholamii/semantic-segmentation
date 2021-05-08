@@ -83,7 +83,7 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
     # extracted_path = dl_manager.download_and_extract('http://data.org/data.zip')
     # for local chooses
     # extracted_path = dl_manager.extract('Copy_Dataset.zip')
-    extracted_path = dl_manager.extract('real_dataset.zip')
+    extracted_path = dl_manager.extract('/home/arash/fun/Humanoid-Robots-Semantic-Segmentation/humanoid_soccer_dataset/real_dataset.zip')
 
     print(extracted_path)
     # TODO(humanoid_soccer_dataset): Returns the Dict[split names, Iterator[Key, Example]]
@@ -113,8 +113,8 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
     for f in images_path.glob('*.png'):
       img_name = str(f.name)
       l = Path(os.path.join(label_path,img_name))
-      f = cv2.resize(cv2.cvtColor(cv2.imread(str(f)),cv2.COLOR_BGR2RGB), (320,240))
-      l = cv2.resize(cv2.cvtColor(cv2.imread(str(l)),cv2.COLOR_BGR2RGB), (320,240))
+      f = cv2.resize(cv2.imread(str(f)), (320,240))
+      l = cv2.resize(cv2.imread(str(l)), (320,240))
       # y = self._one_hot_encode(str(l))
       # count = count + 1
       # print("asdfasdfasdfa",type(y))
@@ -125,8 +125,8 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
     for f in images_path.glob('*.jpg'):
       img_name = str(f.name)
       l = Path(os.path.join(label_path,img_name[:-4]+'.png'))
-      f = cv2.resize(cv2.cvtColor(cv2.imread(str(f)),cv2.COLOR_BGR2RGB), (320,240))
-      l = cv2.resize(cv2.cvtColor(cv2.imread(str(l)),cv2.COLOR_BGR2RGB), (320,240))
+      f = cv2.resize(cv2.imread(str(f)), (320,240))
+      l = cv2.resize(cv2.imread(str(l)), (320,240))
       # y = self._one_hot_encode(str(l))
       # count = count + 1
       # print("asdfasdfasdfa",type(y))
