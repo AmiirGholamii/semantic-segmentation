@@ -114,7 +114,7 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
       img_name = str(f.name)
       l = Path(os.path.join(label_path,img_name))
       f = cv2.resize(cv2.imread(str(f)), (320,240))
-      l = cv2.resize(cv2.imread(str(l)), (320,240))
+      l = cv2.resize(cv2.imread(str(l)), (320,240), 0, 0, cv2.INTER_NEAREST)
       # y = self._one_hot_encode(str(l))
       # count = count + 1
       # print("asdfasdfasdfa",type(y))
@@ -126,7 +126,7 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
       img_name = str(f.name)
       l = Path(os.path.join(label_path,img_name[:-4]+'.png'))
       f = cv2.resize(cv2.imread(str(f)), (320,240))
-      l = cv2.resize(cv2.imread(str(l)), (320,240))
+      l = cv2.resize(cv2.imread(str(l)), (320,240), 0, 0, cv2.INTER_NEAREST)
       # y = self._one_hot_encode(str(l))
       # count = count + 1
       # print("asdfasdfasdfa",type(y))
