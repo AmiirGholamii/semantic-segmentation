@@ -83,14 +83,14 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
     # extracted_path = dl_manager.download_and_extract('http://data.org/data.zip')
     # for local chooses
     # extracted_path = dl_manager.extract('Copy_Dataset.zip')
-    extracted_path = dl_manager.extract('Dataset.zip')
+    extracted_path = dl_manager.extract('real_dataset.zip')
 
     print(extracted_path)
     # TODO(humanoid_soccer_dataset): Returns the Dict[split names, Iterator[Key, Example]]
 
     return {
-        'train': self._generate_examples(images_path = extracted_path / 'train/image',label_path = extracted_path / 'train/label'),
-        # 'test': self._generate_examples(images_path = extracted_path / 'dataset/test/image',label_path = extracted_path / 'dataset/test/label'),
+        'train': self._generate_examples(images_path = extracted_path / 'real_dataset/train/image',label_path = extracted_path / 'real_dataset/train/label'),
+        'test': self._generate_examples(images_path = extracted_path / 'real_dataset/test/image',label_path = extracted_path / 'real_dataset/test/label'),
     }
   def _one_hot_encode(self,y):
     """Converts mask to a one-hot encoding specified by the semantic map."""
@@ -122,16 +122,15 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
         'image': f,
         'label': l,
       }
-    # for f in images_path.glob('*.jpg'):
-    #     l = Path(os.path.join(label_path,f.stem+'.png'))
-    #     # count = count + 1
-    #     y = self._one_hot_encode(str(l))
-    #     # print("asdfasdfasdfa",type(y))
-
-    #     # print('sdfsdfsdfsdfsdfsdf',y)
-    #     yield str(f),{
-    #       'image': f,
-    #       'label': y,
-    #     }
-# dataset = tfds.load('humanoidSoccerDataset')
-# print(dataset)
+    for f in images_path.glob('*.jpg'):
+      img_name = str(f.name)
+      l = Path(os.path.join(label_path,img_name[:-4]+'.png'))
+      f = cv2.resize(cv2.cvtColor(cv2.imread(str(f)),cv2.COLOR_BGR2RGB), (320,240))
+      l = cv2.resize(cv2.cvtColor(cv2.imread(str(l)),cv2.COLOR_BGR2RGB), (320,240))
+      # y = self._one_hot_encode(str(l))
+      # count = count + 1
+      # print("asdfasdfasdfa",type(y))
+      yield str(f),{
+        'image': f,
+        'label': l,
+      }
