@@ -107,9 +107,6 @@ def augmentor(data_set):
     return ds
 
 train_data = augmentor(data_train)
-# iterat = iter(train_data)
-# for it in iterat:
-#     print(np.min(it[0]),np.max(it[0]))
 valid_data = augmentor(data_valid)
 
 
