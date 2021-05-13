@@ -7,6 +7,7 @@ import random
 from keras import backend as K
 import model
 import datetime
+import losses
 
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
@@ -89,7 +90,6 @@ def random_flip_example(image, label):
     return tf.image.random_flip_left_right(image ,seed=seed),tf.image.random_flip_left_right(label ,seed=seed)
 # 3. Data normalization and Augmentation
 def augmentor(data_set):
-    # c_type = tf.float32
     ds = data_set.map(
         lambda data: (tf.image.convert_image_dtype(data["image"], tf.float32), _one_hot_encode(data["label"]))
     ).map(
@@ -109,7 +109,6 @@ def augmentor(data_set):
 train_data = augmentor(data_train)
 valid_data = augmentor(data_valid)
 
-
 # 4. Show some dataset after augmentation
 objects = [
     "Ball",
@@ -119,113 +118,34 @@ objects = [
     "Background",
     "Goals"
 ]
-t_iterator2 = iter(train_data)
-v_iterator2 = iter(valid_data)
-t_next_val2 = t_iterator2.get_next()
-v_next_val2 = v_iterator2.get_next()
-
-t_buf2 = t_next_val2
-v_buf2 = v_next_val2
+t_iterator = iter(train_data)
+v_iterator = iter(valid_data)
+t_next_val = t_iterator.get_next()
+v_next_val = v_iterator.get_next()
 
 plt.figure(figsize = (12,18), dpi = 300)
 
 plt.subplot(2,7,1)
-plt.imshow(t_buf2[0][0])
+plt.imshow(t_next_val[0][0])
 plt.axis("off")
 plt.title("Train Aug")
 
 for ii in range(6):
     plt.subplot(2,7,ii+2)
-    plt.imshow(t_buf2[1][0][:,:,ii], cmap='gray')
+    plt.imshow(t_next_val[1][0][:,:,ii], cmap='gray')
 
 plt.subplot(2,7,8)
-plt.imshow(v_buf2[0][0])
+plt.imshow(v_next_val[0][0])
 plt.axis("off")
 plt.title("Valid Aug")
 
 for ii in range(6):
     plt.subplot(2,7,ii+9)
-    plt.imshow(v_buf2[1][0][:,:,ii], cmap='gray')
+    plt.imshow(v_next_val[1][0][:,:,ii], cmap='gray')
 plt.show()
 
-ALPHA = 0.8
-GAMMA = 2
-
-def FocalLoss(targets, inputs, alpha=ALPHA, gamma=GAMMA):    
-    
-    inputs = K.flatten(inputs)
-    targets = K.flatten(targets)
-    
-    BCE = K.binary_crossentropy(targets, inputs)
-    BCE_EXP = K.exp(BCE)
-    focal_loss = K.mean(alpha * K.pow((1-BCE_EXP), gamma) * BCE)
-    
-    return focal_loss
-
-def dice_coef(y_true, y_pred, smooth=1):
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-
-def dice_coef_loss(y_true, y_pred):
-    return 1 - dice_coef(y_true, y_pred)
-
-
-def tversky(y_true, y_pred, smooth=1, alpha=0.7):
-    y_true_pos = K.flatten(y_true)
-    y_pred_pos = K.flatten(y_pred)
-    true_pos = K.sum(y_true_pos * y_pred_pos)
-    false_neg = K.sum(y_true_pos * (1 - y_pred_pos))
-    false_pos = K.sum((1 - y_true_pos) * y_pred_pos)
-    return (true_pos + smooth) / (true_pos + alpha * false_neg + (1 - alpha) * false_pos + smooth)
-
-
-def tversky_loss(y_true, y_pred):
-    return 1 - tversky(y_true, y_pred)
-
-
-def focal_tversky_loss(y_true, y_pred, gamma=0.75):
-    tv = tversky(y_true, y_pred)
-    return K.pow((1 - tv), gamma)
-
-
-
-def weighted_dice_loss(y_true, y_pred):
-    weight = np.array([1-0.008129217,1-0.741332343,1-0.038759669,1-0.033971285,1-0.159327414,1-0.018480072])
-    # name="MRL_DICE_LOSS"
-    """
-    :param y_true:
-    :param y_pred:
-    :param weight:
-    :param name:
-    :return:
-    """
-    smooth = 1.
-    w, m1, m2 = weight * weight, y_true, y_pred
-    intersection = (m1 * m2)
-    score = (2. * tf.reduce_sum(w * intersection) + smooth) / \
-            (tf.reduce_sum(w * m1) + tf.reduce_sum(w * m2) + smooth)
-    print(score)
-    loss = 1. - tf.reduce_sum(score)
-    return loss
-def jaccard_coef(y_true, y_pred, smooth=1):
-    intersection = tf.keras.backend.sum(
-        tf.keras.backend.abs(y_true * y_pred), axis=-1)
-    sum_ = tf.keras.backend.sum(tf.keras.backend.abs(
-        y_true) + tf.keras.backend.abs(y_pred), axis=-1)
-    jac = (intersection + smooth) / (sum_ - intersection + smooth)
-    return jac * smooth
-
 model = model.unet_model((240, 320, 3), 6)
-# print(model.summary())
-# lr = 1
-def tf_count(t, val):
-    as_ints = tf.cast(t, tf.int32)
-    tf.print(as_ints)
-    count = tf.reduce_sum(as_ints)
-    return count
+
 class BallMeanIOU(tf.keras.metrics.Metric):
     def __init__(self, name='ball_mean_iou', **kwargs):
         super(BallMeanIOU, self).__init__(name=name, **kwargs)
@@ -324,8 +244,9 @@ line_iou = LineMeanIOU()
 background_iou = BackgroundMeanIOU()
 goal_iou = GoalMeanIOU()
 
-metrics =[dice_coef, jaccard_coef,ball_iou,field_iou,robots_iou,line_iou,background_iou,goal_iou,myiou]
-model.compile(optimizer = tf.keras.optimizers.Adam(lr = 1e-3), loss = weighted_dice_loss, metrics = metrics)
+metrics =[losses.dice_coef, losses.jaccard_coef,ball_iou,field_iou,robots_iou,line_iou,background_iou,goal_iou,myiou]
+object_weights = np.array([1-0.008129217, 1-0.741332343, 1-0.038759669, 1-0.033971285, 1-0.159327414, 1-0.018480072])
+model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-3), loss=losses.weighted_dice_loss(weights=object_weights), metrics=metrics)
 
 # 5. Defining Callbacks
 model.save_weights('/home/mrl/Desktop/model/FINAL-MODEL/Humanoid.h5')
