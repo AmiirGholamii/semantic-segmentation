@@ -34,16 +34,17 @@ def focal_tversky_loss(y_true, y_pred, gamma=0.75):
     tv = tversky(y_true, y_pred)
     return K.pow((1 - tv), gamma)
 
-def weighted_dice_loss(y_true, y_pred,weights):
-    weight = np.array([1-0.008129217,1-0.741332343,1-0.038759669,1-0.033971285,1-0.159327414,1-0.018480072])
-    smooth = 1.
-    w, m1, m2 = weights * weights, y_true, y_pred
-    intersection = (m1 * m2)
-    score = (2. * tf.reduce_sum(w * intersection) + smooth) / \
-            (tf.reduce_sum(w * m1) + tf.reduce_sum(w * m2) + smooth)
-    print(score)
-    loss = 1. - tf.reduce_sum(score)
-    return loss
+def weighted_dice_loss(weights):
+    def loss_func(y_true, y_pred):
+        smooth = 1.
+        w, m1, m2 = weights * weights, y_true, y_pred
+        intersection = (m1 * m2)
+        score = (2. * tf.reduce_sum(w * intersection) + smooth) / \
+        (tf.reduce_sum(w * m1) + tf.reduce_sum(w * m2) + smooth)
+        print(score)
+        loss_value = 1. - tf.reduce_sum(score)
+        return loss_value
+    return loss_func
 
 def jaccard_coef(y_true, y_pred, smooth=1):
     intersection = tf.keras.backend.sum(
