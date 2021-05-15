@@ -53,3 +53,32 @@ def jaccard_coef(y_true, y_pred, smooth=1):
         y_true) + tf.keras.backend.abs(y_pred), axis=-1)
     jac = (intersection + smooth) / (sum_ - intersection + smooth)
     return jac * smooth
+
+""" define mean iou accuracy maetric """
+objects_id = {
+    "ball_iou"     : 0,
+    "field_iou"    : 1,
+    "robot_iou"    : 2,
+    "line_iou"     : 3,
+    "back_gnd_iou" : 4,
+    "goal_iou"     : 5
+}
+
+class object_mean_iou(tf.keras.metrics.Metric):
+    def __init__(self, name='mean_iou', **kwargs):
+        super(object_mean_iou, self).__init__(name=name, **kwargs)
+        # self.name = name
+        self.intersection = 0.0
+        self.union = 0.0
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        y_true_1D_map = tf.argmax(y_true, axis=-1)
+        y_pred_1D_map = tf.argmax(y_pred, axis=-1)
+        true_class_map = tf.cast(tf.equal(y_true_1D_map, objects_id[self.name]),dtype=tf.int32)
+        pred_class_map = tf.cast(tf.equal(y_pred_1D_map, objects_id[self.name]),dtype=tf.int32)
+        self.intersection = tf.cast(tf.reduce_sum(tf.bitwise.bitwise_and(true_class_map,pred_class_map)),tf.float32)
+        self.union = tf.cast(tf.reduce_sum(tf.bitwise.bitwise_or(true_class_map,pred_class_map)),tf.float32)
+    def result(self):
+        return self.intersection/self.union
+class total_mean_iou(tf.keras.metrics.MeanIoU):
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        return super().update_state(tf.argmax(y_true, axis=-1), tf.argmax(y_pred, axis=-1), sample_weight)
