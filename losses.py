@@ -16,9 +16,10 @@ def dice_coef(y_true, y_pred, smooth=1):
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-def dice_coef_loss(y_true, y_pred):
-    return 1 - dice_coef(y_true, y_pred)
-
+def dice_coef_loss():
+    def loss_func(y_true, y_pred):
+        return 1 - dice_coef(y_true, y_pred)
+    return loss_func
 def tversky(y_true, y_pred, smooth=1, alpha=0.7):
     y_true_pos = K.flatten(y_true)
     y_pred_pos = K.flatten(y_pred)
