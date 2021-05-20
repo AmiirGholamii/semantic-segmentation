@@ -56,32 +56,28 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
         # extracted_path = dl_manager.download_and_extract('http://data.org/data.zip')
         
         """for local chooses"""
-        extracted_path = dl_manager.extract('/home/arash/fun/Humanoid-Robots-Semantic-Segmentation/humanoid_soccer_dataset/real_dataset.zip')
+        extracted_path = dl_manager.extract('/home/mrl/Arash Rahmani/wbDataSet/Pics_balanced.zip')
 
         # TODO(humanoid_soccer_dataset): Returns the Dict[split names, Iterator[Key, Example]]
         return {
-                'train': self._generate_examples(images_path = extracted_path / 'real_dataset/train/image',label_path = extracted_path / 'real_dataset/train/label'),
-                'test': self._generate_examples(images_path = extracted_path / 'real_dataset/test/image',label_path = extracted_path / 'real_dataset/test/label'),
+                'train': self._generate_examples(images_path = extracted_path / 'Pics_balanced/train/image',label_path = extracted_path / 'Pics_balanced/train/label'),
+                'test': self._generate_examples(images_path = extracted_path / 'Pics_balanced/test/image',label_path = extracted_path / 'Pics_balanced/test/label'),
         }
         
     def _generate_examples(self, images_path, label_path):
         """Yields examples."""
         # TODO(humanoid_soccer_dataset): Yields (key, example) tuples from the dataset
-        for f in images_path.glob('*.png'):
-            img_name = str(f.name)
-            l = Path(os.path.join(label_path,img_name))
-            f = cv2.resize(cv2.imread(str(f)), (320,240))
-            l = cv2.resize(cv2.imread(str(l)), (320,240), 0, 0, interpolation=cv2.INTER_NEAREST)
-            yield str(f),{
-                'image': f,
-                'label': l,
-            }
-        for f in images_path.glob('*.jpg'):
-            img_name = str(f.name)
-            l = Path(os.path.join(label_path,img_name[:-4]+'.png'))
-            f = cv2.resize(cv2.imread(str(f)), (320,240))
-            l = cv2.resize(cv2.imread(str(l)), (320,240), 0, 0, interpolation=cv2.INTER_NEAREST)
-            yield str(f),{
-                'image': f,
-                'label': l,
-            }
+        image_types = ('*.png','*.jpg','*.jpeg')
+        for images in image_types:
+            for f in images_path.glob(images):
+                img_name = str(f.name)
+                if images == '*.jpeg':
+                    l = Path(os.path.join(label_path,img_name[:-5]+'.png'))
+                else:
+                    l = Path(os.path.join(label_path,img_name[:-4]+'.png'))
+                f = cv2.resize(cv2.imread(str(f)), (320,240))
+                l = cv2.resize(cv2.imread(str(l)), (320,240), 0, 0, interpolation=cv2.INTER_NEAREST)
+                yield str(f),{
+                    'image': f,
+                    'label': l,
+                }
