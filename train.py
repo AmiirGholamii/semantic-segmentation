@@ -24,6 +24,12 @@ img_width = 320
 img_height = 240
 BATCH_SIZE = 12
 
+palette = {
+    "Ball"      :np.array([[255.  , 0.  , 0.]],dtype=np.float32),
+    "Field"     :np.array([[0.  , 255., 0.  ]],dtype=np.float32),
+    "Line"      :np.array([[255., 255., 255.],[255., 0.  , 255.]],dtype=np.float32),
+    "Background":np.array([[0.  , 0.  , 0.  ],[0.  , 0.  , 255.],[127, 127, 127]],dtype=np.float32),
+}
 
 # 2. Show some dataset
 train_to_show = data_train.map(
