@@ -225,3 +225,38 @@ model_history = model.fit(train_data, epochs=EPOCHS,
                           validation_steps=VALIDATION_STEPS,
                           validation_data=valid_data,
                           callbacks=callbacks)
+
+
+#TODO
+"""
+model_name = "models/segmentation"
+log_dir = "Logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience = 30)
+
+monitor = tf.keras.callbacks.ModelCheckpoint(model_name, monitor='val_loss',\
+                                             verbose=0,save_best_only=True,\
+                                             save_weights_only=False,\
+                                             mode='min')
+# Learning rate schedule
+def scheduler(epoch, lr):
+    if epoch%20 == 0 and epoch!= 0:
+        lr = lr/2
+    return lr
+
+lr_schedule = tf.keras.callbacks.LearningRateScheduler(scheduler,verbose = 0)
+
+
+# 6. Train the model
+EPOCHS = 420
+STEPS_PER_EPOCH = train_size / BATCH_SIZE
+VALIDATION_STEPS = valid_size / BATCH_SIZE
+callbacks = [early_stop, monitor, lr_schedule, tensorboard_callback]
+
+model_history = model.fit(train_data, epochs=EPOCHS,
+                          steps_per_epoch=STEPS_PER_EPOCH,
+                          validation_steps=VALIDATION_STEPS,
+                          validation_data=valid_data,
+                          callbacks=callbacks) 
+"""
