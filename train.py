@@ -111,14 +111,6 @@ for ii in range(2, 4):
 plt.show()
 
 # 3. One-hot encoding
-palette = np.array([
-    [ 31., 120., 180.] , # Ball
-    [106., 176., 25. ] , # Field
-    [156.,  62., 235.] , # Robots
-    [255., 255., 255.] , # Line
-    [ 69., 144., 232.] , # Background
-    [227.,  26., 28. ] , # Goal
-    ], dtype=np.float32)
 
 
 # 3. Data normalization and Augmentation
