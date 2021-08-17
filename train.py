@@ -113,13 +113,36 @@ plt.show()
 # 3. One-hot encoding
 
 
-# 3. Data normalization and Augmentation
-
 
 train_data = augmentor(data_train)
 valid_data = augmentor(data_valid)
 
-# 4. Show some dataset after augmentation
+plot_dataset = False
+
+if plot_dataset:
+    def display_sample(display_list):
+        """Show side-by-side an input image,
+        the ground truth and the prediction.
+        """
+        print(tf.math.reduce_max (image),tf.math.reduce_min (image))
+        plt.figure(figsize=(18, 18))
+
+        title = ['Input Image', 'True Mask', 'Predicted Mask']
+
+        for i in range(len(display_list)):
+            plt.subplot(1, len(display_list), i+1)
+            plt.title(title[i])
+            plt.imshow(tf.keras.preprocessing.image.array_to_img(display_list[i]))
+            plt.axis('off')
+        plt.show()
+
+    for image, mask in train_data.take(100):
+        display_sample([image[0], mask[0]])
+
+
+# 3. Data normalization and Augmentation
+
+# 4. Show some dataset after augmentation /////////////////////
 objects = [
     "Ball",
     "Field",
@@ -154,19 +177,21 @@ for ii in range(6):
     plt.imshow(v_next_val[1][0][:,:,ii], cmap='gray')
 plt.show()
 
-model = model.unet_model((240, 320, 3), 6)
+# ////////////////////////////////////////////////////////////
 
-total_iou      = losses.total_mean_iou(6)
+model = model.unet_model((img_height, img_width, 3), CLASSES_NUMBER)
+
+total_iou      = losses.total_mean_iou(CLASSES_NUMBER)
 ball_iou       = losses.object_mean_iou("ball_iou")
 field_iou      = losses.object_mean_iou("field_iou")
-robots_iou     = losses.object_mean_iou("robot_iou")
 line_iou       = losses.object_mean_iou("line_iou")
 background_iou = losses.object_mean_iou("back_gnd_iou")
-goal_iou       = losses.object_mean_iou("goal_iou")
+circle_iou     = losses.object_mean_iou("circle_iou")
+cls_w = [losses.class_weights(m) for m in range(5)]
 
-metrics =[losses.dice_coef, losses.jaccard_coef, ball_iou, field_iou, robots_iou, line_iou, background_iou, goal_iou, total_iou]
-object_weights = np.array([1-0.008129217, 1-0.741332343, 1-0.038759669, 1-0.033971285, 1-0.159327414, 1-0.018480072])
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-3), loss=losses.weighted_dice_loss(weights=object_weights), metrics=metrics)
+metrics =[losses.dice_coef, losses.jaccard_coef, ball_iou, field_iou, line_iou, background_iou, total_iou]
+
+model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-3), loss=losses.multi_category_focal_loss1, metrics=metrics)
 
 # 5. Defining Callbacks
 model.save_weights('/home/mrl/Desktop/model/FINAL-MODEL/Humanoid.h5')
