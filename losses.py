@@ -51,6 +51,8 @@ def dice_coef(y_true, y_pred, smooth=1):
 
 def multi_category_focal_loss1(y_true, y_pred):
     epsilon = 1.e-7
+    # first reduce along the first dimention (dimention 0 == all one-hot lables in input batch)
+    # then reduce along the second and third dimentions (dimention 1,2 = rows ,columns dimentions)
     class_count = tf.reduce_sum(y_true,[0,1,2]) + 1
     class_weights = tf.reduce_sum(class_count) /  class_count
     class_weights = class_weights / tf.reduce_sum(class_weights)
