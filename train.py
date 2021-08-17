@@ -30,6 +30,8 @@ palette = {
     "Line"      :np.array([[255., 255., 255.],[255., 0.  , 255.]],dtype=np.float32),
     "Background":np.array([[0.  , 0.  , 0.  ],[0.  , 0.  , 255.],[127, 127, 127]],dtype=np.float32),
 }
+CLASSES_NUMBER = len(palette.keys())
+
 
 # 2. Show some dataset
 train_to_show = data_train.map(
@@ -98,8 +100,6 @@ def random_flip_example(image, label):
     return tf.image.random_flip_left_right(image ,seed=seed),tf.image.random_flip_left_right(label ,seed=seed)
 
 # 3. Data normalization and Augmentation
-CLASSES_NUMBER = 6
-BATCH_SIZE = 40
 def augmentor(data_set):
     ds = data_set.map(
         lambda data: (tf.image.convert_image_dtype(data["image"], tf.float32), _one_hot_encode(data["label"]))
