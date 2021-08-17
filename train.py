@@ -32,6 +32,24 @@ palette = {
 }
 CLASSES_NUMBER = len(palette.keys())
 
+def _one_hot_encode(img):
+    """Converts mask to a one-hot encoding specified by the semantic map."""
+    semantic_map = []
+    for category in palette :
+        class_map = tf.zeros((img_height,img_width), dtype=tf.dtypes.bool, name=None)
+        for color in palette[category]:
+            p_map = tf.reduce_all(tf.equal(img, color), axis=-1)
+            class_map = tf.math.logical_or(p_map,class_map)
+        semantic_map.append(class_map)
+
+    semantic_map = tf.stack(semantic_map, axis=-1)
+    semantic_map = tf.cast(semantic_map, tf.float32)
+
+    return semantic_map
+
+def random_flip_example(image, label):
+    seed = random.random()*10
+    return tf.image.random_flip_left_right(image ,seed=seed),tf.image.random_flip_left_right(label ,seed=seed)
 
 # 2. Show some dataset
 train_to_show = data_train.map(
@@ -85,19 +103,6 @@ palette = np.array([
     [227.,  26., 28. ] , # Goal
     ], dtype=np.float32)
 
-def _one_hot_encode(img):
-    """Converts mask to a one-hot encoding specified by the semantic map."""
-    semantic_map = []
-    for color in palette:
-      class_map = tf.reduce_all(tf.equal(img, color), axis=-1)
-      semantic_map.append(class_map)
-    semantic_map = tf.stack(semantic_map, axis=-1)
-    semantic_map = tf.cast(semantic_map, tf.float32)
-    return semantic_map
-
-def random_flip_example(image, label):
-    seed = random.random()*10
-    return tf.image.random_flip_left_right(image ,seed=seed),tf.image.random_flip_left_right(label ,seed=seed)
 
 # 3. Data normalization and Augmentation
 def augmentor(data_set):
