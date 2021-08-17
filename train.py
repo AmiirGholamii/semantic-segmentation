@@ -51,6 +51,23 @@ def random_flip_example(image, label):
     seed = random.random()*10
     return tf.image.random_flip_left_right(image ,seed=seed),tf.image.random_flip_left_right(label ,seed=seed)
 
+def augmentor(data_set):
+    ds = data_set.map(
+        lambda data: (data["image"],data["label"])
+    ).map(
+        lambda image, label: (tf.image.random_hue(image, 0.08), label)
+    ).map(
+        lambda image, label: (tf.image.random_saturation(image, 1, 3), label)
+    ).map(
+        lambda image, label: (random_flip_example(image, label))
+    ).map(
+        lambda image, label: (tf.image.random_brightness(image, 0.3), label)
+    ).map(
+        lambda image, label: (tf.cast(image,tf.float32) ,_one_hot_encode(label))
+    ).batch(
+        BATCH_SIZE
+    ).repeat()
+    return ds
 # 2. Show some dataset
 train_to_show = data_train.map(
     lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
@@ -105,21 +122,7 @@ palette = np.array([
 
 
 # 3. Data normalization and Augmentation
-def augmentor(data_set):
-    ds = data_set.map(
-        lambda data: (tf.image.convert_image_dtype(data["image"], tf.float32), _one_hot_encode(data["label"]))
-    ).map(
-        lambda image, label: (tf.image.random_hue(image, 0.12), label)
-    ).map(
-        lambda image, label: (tf.image.random_saturation(image, 1, 3), label)
-    ).map(
-        lambda image, label: (random_flip_example(image, label))
-    ).map(
-        lambda image, label: (tf.add(image, tf.random.normal(shape=tf.shape(image), mean=0.0, stddev=.02)), label)
-    ).batch(
-        BATCH_SIZE
-    ).repeat()
-    return ds
+
 
 train_data = augmentor(data_train)
 valid_data = augmentor(data_valid)
