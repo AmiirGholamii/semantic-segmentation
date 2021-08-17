@@ -20,6 +20,11 @@ data_valid  = tfds.load("humanoidSoccerDataset", split='train[80%:]', shuffle_fi
 train_size = sum(1 for _ in data_train)
 valid_size = sum(1 for _ in data_valid)
 
+img_width = 320
+img_height = 240
+BATCH_SIZE = 12
+
+
 # 2. Show some dataset
 train_to_show = data_train.map(
     lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
