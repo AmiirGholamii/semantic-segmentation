@@ -17,7 +17,8 @@ def conv_block(inputs, filters, pooling=True):
 
 def unet_model(input_shape, num_classes):
     inputs = layers.Input(input_shape)
-    x1, p1 = conv_block(inputs, 16, pooling=True)
+    x0 = layers.experimental.preprocessing.Rescaling(1./255, offset=0.0)(inputs)
+    x1, p1 = conv_block(x0, 16, pooling=True)
     x2, p2 = conv_block(p1, 32, pooling=True)
     x3, p3 = conv_block(p2, 48, pooling=True)
     x4, p4 = conv_block(p3, 64, pooling=True)
