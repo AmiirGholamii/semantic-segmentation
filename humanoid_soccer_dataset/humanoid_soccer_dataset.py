@@ -56,12 +56,12 @@ class HumanoidSoccerDataset(tfds.core.GeneratorBasedBuilder):
         # extracted_path = dl_manager.download_and_extract('http://data.org/data.zip')
         
         """for local chooses"""
-        extracted_path = dl_manager.extract('/home/mrl/Arash Rahmani/wbDataSet/Pics_balanced.zip')
+        extracted_path = dl_manager.extract('/home/mrl/semantic segmentation article/semantic segmentation logs/Dataset-asli.zip')
 
         # TODO(humanoid_soccer_dataset): Returns the Dict[split names, Iterator[Key, Example]]
         return {
-                'train': self._generate_examples(images_path = extracted_path / 'Pics_balanced/train/image',label_path = extracted_path / 'Pics_balanced/train/label'),
-                'test': self._generate_examples(images_path = extracted_path / 'Pics_balanced/test/image',label_path = extracted_path / 'Pics_balanced/test/label'),
+                'train': self._generate_examples(images_path = extracted_path / 'Dataset-asli/train/image',label_path = extracted_path / 'Dataset-asli/train/label'),
+                'test': self._generate_examples(images_path = extracted_path / 'Dataset-asli/test/image',label_path = extracted_path / 'Dataset-asli/test/label'),
         }
         
     def _generate_examples(self, images_path, label_path):
