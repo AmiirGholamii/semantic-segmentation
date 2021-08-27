@@ -25,10 +25,18 @@ img_height = 240
 BATCH_SIZE = 12
 
 palette = {
-    "Ball"      :np.array([[255.  , 0.  , 0.]],dtype=np.float32),
-    "Field"     :np.array([[0.  , 255., 0.  ]],dtype=np.float32),
-    "Line"      :np.array([[255., 255., 255.],[255., 0.  , 255.]],dtype=np.float32),
-    "Background":np.array([[0.  , 0.  , 0.  ],[0.  , 0.  , 255.],[127, 127, 127]],dtype=np.float32),
+    # "Ball"       :np.array([[ 31., 120., 180.]],dtype=np.float32),
+    # "Field"      :np.array([[106., 176., 25. ]],dtype=np.float32),
+    # "Robots"     :np.array([[156.,  62., 235.]],dtype=np.float32),
+    # "Line"       :np.array([[255., 255., 255.]],dtype=np.float32),
+    # "Background" :np.array([[ 69., 144., 232.]],dtype=np.float32),
+    # "Goal"       :np.array([[227.,  26., 28. ]],dtype=np.float32),
+    "Ball"       :np.array([[180., 120.,  31.]],dtype=np.float32),
+    "Field"      :np.array([[25. , 176., 106.]],dtype=np.float32),
+    "Robots"     :np.array([[235.,  62., 156.]],dtype=np.float32),
+    "Line"       :np.array([[255., 255., 255.]],dtype=np.float32),
+    "Background" :np.array([[232., 144.,  69.]],dtype=np.float32),
+    "Goal"       :np.array([[28. ,  26., 227.]],dtype=np.float32),
 }
 CLASSES_NUMBER = len(palette.keys())
 
@@ -41,10 +49,8 @@ def _one_hot_encode(img):
             p_map = tf.reduce_all(tf.equal(img, color), axis=-1)
             class_map = tf.math.logical_or(p_map,class_map)
         semantic_map.append(class_map)
-
     semantic_map = tf.stack(semantic_map, axis=-1)
     semantic_map = tf.cast(semantic_map, tf.float32)
-
     return semantic_map
 
 def random_flip_example(image, label):
@@ -69,46 +75,46 @@ def augmentor(data_set):
     ).repeat()
     return ds
 # 2. Show some dataset
-train_to_show = data_train.map(
-    lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
-).batch(
-    64
-)
-valid_to_show = data_valid.map(
-    lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
-).batch(
-    64
-)
-train_to_calculate_weights = iter(train_to_show)
+# train_to_show = data_train.map(
+#     lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
+# ).batch(
+#     64
+# )
+# valid_to_show = data_valid.map(
+#     lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
+# ).batch(
+#     64
+# )
+# train_to_calculate_weights = iter(train_to_show)
 
-t_iterator = iter(train_to_show)
-v_iterator = iter(valid_to_show)
-t_next_val = t_iterator.get_next()
-v_next_val = v_iterator.get_next()
+# t_iterator = iter(train_to_show)
+# v_iterator = iter(valid_to_show)
+# t_next_val = t_iterator.get_next()
+# v_next_val = v_iterator.get_next()
 
-t_buf = t_next_val
-v_buf = v_next_val
+# t_buf = t_next_val
+# v_buf = v_next_val
 
-for ii in range(2):
-    print(t_buf[0][ii])
-    plt.subplot(2, 4, ii*2+1)
-    plt.imshow(t_buf[0][ii])
-    plt.axis("off")
-    plt.title("Image Train")
-    plt.subplot(2, 4, ii*2+2)
-    plt.imshow(t_buf[1][ii])
-    plt.axis("off")
-    plt.title("Image Train")
-for ii in range(2, 4):
-    plt.subplot(2, 4, ii*2+1)
-    plt.imshow(v_buf[0][ii])
-    plt.axis("off")
-    plt.title("Image Valid")
-    plt.subplot(2, 4, ii*2+2)
-    plt.imshow(v_buf[1][ii])
-    plt.axis("off")
-    plt.title("Label Valid")
-plt.show()
+# for ii in range(2):
+#     # print(t_buf[0][ii])
+#     plt.subplot(2, 4, ii*2+1)
+#     plt.imshow(t_buf[0][ii])
+#     plt.axis("off")
+#     plt.title("Train Image")
+#     plt.subplot(2, 4, ii*2+2)
+#     plt.imshow(t_buf[1][ii])
+#     plt.axis("off")
+#     plt.title("Train Label")
+# for ii in range(2, 4):
+#     plt.subplot(2, 4, ii*2+1)
+#     plt.imshow(v_buf[0][ii])
+#     plt.axis("off")
+#     plt.title("Valid Image")
+#     plt.subplot(2, 4, ii*2+2)
+#     plt.imshow(v_buf[1][ii])
+#     plt.axis("off")
+#     plt.title("Valid Label")
+# plt.show()
 
 # 3. One-hot encoding
 
@@ -116,6 +122,7 @@ plt.show()
 
 train_data = augmentor(data_train)
 valid_data = augmentor(data_valid)
+print("asdfasdasdf")
 
 plot_dataset = False
 
@@ -124,7 +131,7 @@ if plot_dataset:
         """Show side-by-side an input image,
         the ground truth and the prediction.
         """
-        print(tf.math.reduce_max (image),tf.math.reduce_min (image))
+        # print(tf.math.reduce_max (image),tf.math.reduce_min (image))
         plt.figure(figsize=(18, 18))
 
         title = ['Input Image', 'True Mask', 'Predicted Mask']
@@ -144,58 +151,59 @@ if plot_dataset:
 
 # 4. Show some dataset after augmentation /////////////////////
 objects = [
-    "Ball",
-    "Field",
-    "Robots",
-    "Line",
+    "Ball"      ,
+    "Field"     ,
+    "Robots"    ,
+    "Line"      ,
     "Background",
-    "Goals"
+    "Goal"      ,
 ]
-t_iterator = iter(train_data)
-v_iterator = iter(valid_data)
-t_next_val = t_iterator.get_next()
-v_next_val = v_iterator.get_next()
+# t_iterator = iter(train_data)
+# v_iterator = iter(valid_data)
+# t_next_val = t_iterator.get_next()
+# v_next_val = v_iterator.get_next()
 
-plt.figure(figsize = (12,18), dpi = 300)
+# plt.figure(figsize = (12,18), dpi = 300)
 
-plt.subplot(2,7,1)
-plt.imshow(t_next_val[0][0])
-plt.axis("off")
-plt.title("Train Aug")
+# plt.subplot(2,7,1)
+# plt.imshow(t_next_val[0][0]/255.)
+# plt.axis("off")
+# plt.title("Train Aug")
 
-for ii in range(6):
-    plt.subplot(2,7,ii+2)
-    plt.imshow(t_next_val[1][0][:,:,ii], cmap='gray')
+# for ii in range(6):
+#     plt.subplot(2,7,ii+2)
+#     plt.imshow(t_next_val[1][0][:,:,ii], cmap='gray')
 
-plt.subplot(2,7,8)
-plt.imshow(v_next_val[0][0])
-plt.axis("off")
-plt.title("Valid Aug")
+# plt.subplot(2,7,8)
+# plt.imshow(v_next_val[0][0]/255.)
+# plt.axis("off")
+# plt.title("Valid Aug")
 
-for ii in range(6):
-    plt.subplot(2,7,ii+9)
-    plt.imshow(v_next_val[1][0][:,:,ii], cmap='gray')
-plt.show()
+# for ii in range(6):
+#     plt.subplot(2,7,ii+9)
+#     plt.imshow(v_next_val[1][0][:,:,ii], cmap='gray')
+# plt.show()
 
 # ////////////////////////////////////////////////////////////
 
 model = model.unet_model((img_height, img_width, 3), CLASSES_NUMBER)
 
 total_iou      = losses.total_mean_iou(CLASSES_NUMBER)
-ball_iou       = losses.object_mean_iou("ball_iou")
-field_iou      = losses.object_mean_iou("field_iou")
-line_iou       = losses.object_mean_iou("line_iou")
-background_iou = losses.object_mean_iou("back_gnd_iou")
-circle_iou     = losses.object_mean_iou("circle_iou")
+ball_iou       = losses.object_mean_iou("ball_iou"       )
+field_iou      = losses.object_mean_iou("field_iou"      )
+robots_iou     = losses.object_mean_iou("robots_iou"     )
+line_iou       = losses.object_mean_iou("line_iou"       )
+background_iou = losses.object_mean_iou("background_iou" )
+goal_iou       = losses.object_mean_iou("goal_iou"       )
 cls_w = [losses.class_weights(m) for m in range(5)]
 
 metrics =[losses.dice_coef, losses.jaccard_coef, ball_iou, field_iou, line_iou, background_iou, total_iou]
 
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-3), loss=losses.multi_category_focal_loss1, metrics=metrics)
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), loss=losses.multi_category_focal_loss1, metrics=metrics)
 
 # 5. Defining Callbacks
-model.save_weights('/home/mrl/Desktop/model/FINAL-MODEL/Humanoid.h5')
-model_name = "Humanoid.h5"
+# model.save_weights('/home/mrl/Desktop/model/FINAL-MODEL/Humanoid.h5')
+model_name = "/home/mrl/semantic segmentation article/models/Humanoid.h5"
 log_dir = "Logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
@@ -214,7 +222,7 @@ def scheduler(epoch, lr):
 lr_schedule = tf.keras.callbacks.LearningRateScheduler(scheduler,verbose = 0)
 
 
-# 6. Train the model
+# # 6. Train the model
 EPOCHS = 420
 STEPS_PER_EPOCH = 250
 VALIDATION_STEPS = 5
