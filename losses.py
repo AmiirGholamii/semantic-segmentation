@@ -56,8 +56,8 @@ def multi_category_focal_loss1(y_true, y_pred):
     class_count = tf.reduce_sum(y_true,[0,1,2]) + 1
     class_weights = tf.reduce_sum(class_count) /  class_count
     class_weights = class_weights / tf.reduce_sum(class_weights)
-
-    alpha = tf.reshape(class_weights,[4,1])
+    CLASSES_NUMBER = 6
+    alpha = tf.reshape(class_weights,[CLASSES_NUMBER,1])
     print((alpha))
     gamma = 2.0
     y_true = tf.cast(y_true, tf.float32)
@@ -122,10 +122,12 @@ def jaccard_coef(y_true, y_pred, smooth=1):
 
 """ define mean iou accuracy maetric """
 objects_id = {
-    "ball_iou"     : 0,
-    "field_iou"    : 1,
-    "line_iou"     : 2,
-    "back_gnd_iou" : 3,
+    "ball_iou"       : 0,
+    "field_iou"      : 1,
+    "robots_iou"     : 2,
+    "line_iou"       : 3,
+    "background_iou" : 4,
+    "goal_iou"       : 5,
 }
 
 class object_mean_iou(tf.keras.metrics.Metric):
