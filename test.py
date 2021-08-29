@@ -36,10 +36,10 @@ palette = np.array([
     [227.,26.,28.  ] , # Goal
 ], dtype=np.float32)
 
-model_name = "/home/mrl/Desktop/model/trl/fine_tune_arash.h5"
+model_name = "/home/mrl/semantic-segmentation-article/models/Humanoid.h5"
 # model_name = "/home/mrl/Desktop/model/trl/trl.h5"
 
-model = model.build_unet((240, 320, 3), 6)
+model = model.unet_model((240, 320, 3), 6)
 model.load_weights(model_name)
 
 # # TODO
@@ -234,31 +234,24 @@ def random_flip_example(image, label):
     seed = random.random()*10
     return tf.image.random_flip_left_right(image ,seed=seed),tf.image.random_flip_left_right(label ,seed=seed)
 def augmentor(data_set):
-    # c_type = tf.float32
     ds = data_set.map(
-        lambda data: (tf.image.convert_image_dtype(data["image"], tf.float32), _one_hot_encode(data["label"]))
+        lambda data: (data["image"],data["label"])
     ).map(
-        lambda image, label: (tf.image.random_hue(image, 0.12), label)
+        lambda image, label: (tf.image.random_hue(image, 0.08), label)
     ).map(
         lambda image, label: (tf.image.random_saturation(image, 1, 3), label)
     ).map(
         lambda image, label: (random_flip_example(image, label))
     ).map(
-        lambda image, label: (tf.add(image, tf.random.normal(shape=tf.shape(image), mean=0.0, stddev=.02)), label)
+        lambda image, label: (tf.image.random_brightness(image, 0.3), label)
+    ).map(
+        lambda image, label: (tf.cast(image,tf.float32) ,_one_hot_encode(label))
     ).batch(
         1
     )
-
     return ds
-
 test_data = augmentor(data_test)
 model.evaluate(test_data)
-
-
-
-
-
-
 
 palette = np.array([
     [180.,120.,31. ] , # Ball
@@ -270,14 +263,13 @@ palette = np.array([
     ], dtype=np.float32)
 # directory = "/home/mrl/2021/best model/2/humanoid_soccer_dataset/test/image"
 # directory ='/home/mrl/tensorflow_datasets/downloads/extracted/ZIP.Dataset.zip/train/image'
-directory ='/home/mrl/tensorflow_datasets/downloads/extracted/ZIP.real_dataset.zip/real_dataset/test/image'
+directory ='/home/mrl/tensorflow_datasets/downloads/extracted/ZIP.Dataset-asli.zip/Dataset-asli/train/image'
 for filename in os.listdir(directory):
     print(filename)
-    if filename.endswith(".jpg"): 
+    if filename.endswith(".png"): 
         x_test = cv2.imread(os.path.join(directory,filename))
         x_test = cv2.resize(x_test, (320,240))
         x_test=np.expand_dims(x_test,axis=0)
-        x_test= x_test/255.
         mask = np.zeros([240,320,3],dtype=np.uint8)
 
         start = timeit.default_timer()
@@ -290,4 +282,5 @@ for filename in os.listdir(directory):
                 class_num = np.argmax(y_pred[i,j])
                 mask[i,j] = palette[class_num]
         cv2.imshow("asdaf",mask)
+        cv2.imwrite(filename,mask)
         cv2.waitKey(0)
