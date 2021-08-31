@@ -9,21 +9,21 @@ import model
 import datetime
 import losses
 
+# the runtime initialization will not allocate all memory on the device
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 # 80% train 15% validation
-data_train  = tfds.load("humanoidSoccerDataset", split='train[:80%]', shuffle_files=True)
-data_valid  = tfds.load("humanoidSoccerDataset", split='train[80%:]', shuffle_files=True)
+DATA_TRAIN  = tfds.load("humanoidSoccerDataset", split='train[:80%]', shuffle_files=True)
+DATA_VALID  = tfds.load("humanoidSoccerDataset", split='train[80%:]', shuffle_files=True)
 
-train_size = sum(1 for _ in data_train)
-valid_size = sum(1 for _ in data_valid)
-
-img_width = 320
-img_height = 240
+# define some constants
+TRAIN_SIZE = sum(1 for _ in DATA_TRAIN)
+VALID_SIZE = sum(1 for _ in DATA_VALID)
+IMAGE_WIDTH = 320
+IMAGE_HEIGHT = 240
 BATCH_SIZE = 12
-
-palette = {
+PALETTE = {
     "Ball"       :np.array([[180., 120.,  31.]],dtype=np.float32),
     "Field"      :np.array([[25. , 176., 106.]],dtype=np.float32),
     "Robots"     :np.array([[235.,  62., 156.]],dtype=np.float32),
@@ -31,14 +31,14 @@ palette = {
     "Background" :np.array([[232., 144.,  69.]],dtype=np.float32),
     "Goal"       :np.array([[28. ,  26., 227.]],dtype=np.float32),
 }
-CLASSES_NUMBER = len(palette.keys())
+CLASSES_NUMBER = len(PALETTE.keys())
 
 def _one_hot_encode(img):
     """Converts mask to a one-hot encoding specified by the semantic map."""
     semantic_map = []
-    for category in palette :
-        class_map = tf.zeros((img_height,img_width), dtype=tf.dtypes.bool, name=None)
-        for color in palette[category]:
+    for category in PALETTE :
+        class_map = tf.zeros((IMAGE_HEIGHT,IMAGE_WIDTH), dtype=tf.dtypes.bool, name=None)
+        for color in PALETTE[category]:
             p_map = tf.reduce_all(tf.equal(img, color), axis=-1)
             class_map = tf.math.logical_or(p_map,class_map)
         semantic_map.append(class_map)
@@ -68,12 +68,12 @@ def augmentor(data_set):
     ).repeat()
     return ds
 # 2. Show some dataset
-# train_to_show = data_train.map(
+# train_to_show = DATA_TRAIN.map(
 #     lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
 # ).batch(
 #     64
 # )
-# valid_to_show = data_valid.map(
+# valid_to_show = DATA_VALID.map(
 #     lambda data: (tf.cast(data["image"], tf.float32)/255., data['label'])
 # ).batch(
 #     64
@@ -113,8 +113,8 @@ def augmentor(data_set):
 
 
 
-train_data = augmentor(data_train)
-valid_data = augmentor(data_valid)
+train_data = augmentor(DATA_TRAIN)
+valid_data = augmentor(DATA_VALID)
 print("asdfasdasdf")
 
 plot_dataset = False
@@ -179,7 +179,7 @@ objects = [
 
 # ////////////////////////////////////////////////////////////
 
-model = model.unet_model((img_height, img_width, 3), CLASSES_NUMBER)
+model = model.unet_model((IMAGE_HEIGHT, IMAGE_WIDTH, 3), CLASSES_NUMBER)
 
 total_iou      = losses.total_mean_iou(CLASSES_NUMBER)
 ball_iou       = losses.object_mean_iou("ball_iou"       )
@@ -217,7 +217,7 @@ lr_schedule = tf.keras.callbacks.LearningRateScheduler(scheduler,verbose = 0)
 
 # # 6. Train the model
 EPOCHS = 420
-STEPS_PER_EPOCH = train_size / BATCH_SIZE
+STEPS_PER_EPOCH = TRAIN_SIZE / BATCH_SIZE
 VALIDATION_STEPS = 5
 callbacks = [early_stop, monitor, lr_schedule, tensorboard_callback]
 
@@ -251,8 +251,8 @@ lr_schedule = tf.keras.callbacks.LearningRateScheduler(scheduler,verbose = 0)
 
 # 6. Train the model
 EPOCHS = 420
-STEPS_PER_EPOCH = train_size / BATCH_SIZE
-VALIDATION_STEPS = valid_size / BATCH_SIZE
+STEPS_PER_EPOCH = TRAIN_SIZE / BATCH_SIZE
+VALIDATION_STEPS = VALID_SIZE / BATCH_SIZE
 callbacks = [early_stop, monitor, lr_schedule, tensorboard_callback]
 
 model_history = model.fit(train_data, epochs=EPOCHS,
