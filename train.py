@@ -217,7 +217,7 @@ lr_schedule = tf.keras.callbacks.LearningRateScheduler(scheduler,verbose = 0)
 
 # # 6. Train the model
 EPOCHS = 420
-STEPS_PER_EPOCH = 666
+STEPS_PER_EPOCH = train_size / BATCH_SIZE
 VALIDATION_STEPS = 5
 callbacks = [early_stop, monitor, lr_schedule, tensorboard_callback]
 
