@@ -188,7 +188,6 @@ robots_iou     = losses.object_mean_iou("robots_iou"     )
 line_iou       = losses.object_mean_iou("line_iou"       )
 background_iou = losses.object_mean_iou("background_iou" )
 goal_iou       = losses.object_mean_iou("goal_iou"       )
-cls_w = [losses.class_weights(m) for m in range(5)]
 
 metrics =[losses.dice_coef, losses.jaccard_coef, ball_iou, field_iou, line_iou, background_iou, total_iou]
 
