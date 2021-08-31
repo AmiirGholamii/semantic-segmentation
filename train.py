@@ -143,14 +143,6 @@ if plot_dataset:
 # 3. Data normalization and Augmentation
 
 # 4. Show some dataset after augmentation /////////////////////
-objects = [
-    "Ball"      ,
-    "Field"     ,
-    "Robots"    ,
-    "Line"      ,
-    "Background",
-    "Goal"      ,
-]
 # t_iterator = iter(train_data)
 # v_iterator = iter(valid_data)
 # t_next_val = t_iterator.get_next()
