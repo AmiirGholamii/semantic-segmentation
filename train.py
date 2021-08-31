@@ -12,10 +12,9 @@ import losses
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
-# 80% train 15% validation 5% test
+# 80% train 15% validation
 data_train  = tfds.load("humanoidSoccerDataset", split='train[:80%]', shuffle_files=True)
 data_valid  = tfds.load("humanoidSoccerDataset", split='train[80%:]', shuffle_files=True)
-# data_test   = tfds.load("humanoidSoccerDataset", split='test', shuffle_files=True)
 
 train_size = sum(1 for _ in data_train)
 valid_size = sum(1 for _ in data_valid)
