@@ -189,7 +189,7 @@ line_iou       = losses.object_mean_iou("line_iou"       )
 background_iou = losses.object_mean_iou("background_iou" )
 goal_iou       = losses.object_mean_iou("goal_iou"       )
 
-metrics =[losses.dice_coef, losses.jaccard_coef, ball_iou, field_iou, line_iou, background_iou, total_iou]
+metrics =[losses.dice_coef, losses.jaccard_coef, ball_iou, field_iou, line_iou, robots_iou, background_iou, goal_iou, total_iou]
 
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3), loss=losses.multi_category_focal_loss1, metrics=metrics)
 
