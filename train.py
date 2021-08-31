@@ -25,12 +25,6 @@ img_height = 240
 BATCH_SIZE = 12
 
 palette = {
-    # "Ball"       :np.array([[ 31., 120., 180.]],dtype=np.float32),
-    # "Field"      :np.array([[106., 176., 25. ]],dtype=np.float32),
-    # "Robots"     :np.array([[156.,  62., 235.]],dtype=np.float32),
-    # "Line"       :np.array([[255., 255., 255.]],dtype=np.float32),
-    # "Background" :np.array([[ 69., 144., 232.]],dtype=np.float32),
-    # "Goal"       :np.array([[227.,  26., 28. ]],dtype=np.float32),
     "Ball"       :np.array([[180., 120.,  31.]],dtype=np.float32),
     "Field"      :np.array([[25. , 176., 106.]],dtype=np.float32),
     "Robots"     :np.array([[235.,  62., 156.]],dtype=np.float32),
